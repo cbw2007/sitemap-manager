@@ -10,12 +10,9 @@ const xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'
 
 class SitemapManager {
   options: FullOptions
-  #urlDatas: {
-    [category: string]: string
-  } = {}
-
+  #urlDatas: Record<string, string> = {}
   #urls: Set<string> = new Set()
-  #isFinished: Boolean = false
+  #isFinished: boolean = false
 
   constructor (options: Options) {
     this.options = {
@@ -31,14 +28,19 @@ class SitemapManager {
 
   addUrl (category: string, url: UrlObj[] | UrlObj): void {
     if (this.#isFinished) { throw new Error('[SitemapManager] Error: Lifecycle finished') }
-    if (!Array.isArray(url)) url = [url]
-    url.forEach((value) => {
-      if (!this.#urls.has(value.loc.toString())) {
-        this.#urls.add(value.loc.toString())
-      } else {
-        this.options.hooks.warningHandler(`Url ${value.loc.toString()} is repeated.`)
+    const urls = Array.isArray(url) ? url : [url]
+    urls.forEach((value) => {
+      const locString = value.loc.toString()
+      if (this.#urls.has(locString)) {
+        this.options.hooks.warningHandler(`Url ${locString} is repeated.`)
+        return
       }
-      this.#urlDatas[category] = this.#urlDatas[category] + `<url>${utils.objToString(value, this.options.hooks.warningHandler)}</url>`
+
+      this.#urls.add(locString)
+      if (!this.#urlDatas[category]) {
+        this.#urlDatas[category] = ''
+      }
+      this.#urlDatas[category] += `<url>${utils.objToString(value, this.options.hooks.warningHandler)}</url>`
     })
   }
 
