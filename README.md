@@ -7,6 +7,7 @@ An easy way to create sitemaps!
 - Work fast 🚀
 - Xml with xsl. For search engines or for human visions? Don't choose, for both! 🥳
 - Put different pages into different sitemaps. 🧺
+- Duplicate URLs are skipped and surfaced via the warning hook.
 
 ## Usage
 
@@ -42,6 +43,16 @@ MySitemap.addUrl(/*Category name here*/, [
     { loc: ''/*URL*/, lastmod: ''||new Date()/*Last modification time*/, changefreq: ''||1-7/*Change frequence*/, priority: 0.0-1.0 /*Priority*/ },
     /*You can add more!*/
 ])
+```
+
+Optional: customize lifecycle hooks (e.g. silence duplicate warnings):
+```js
+const MySitemap = new SitemapManager({
+    siteURL: 'https://example.com',
+    hooks: {
+        warningHandler: (msg) => console.warn(msg)
+    }
+})
 ```
 
 Step5. Finish!
